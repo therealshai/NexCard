@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -9,24 +8,27 @@ import { motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
+import { useSearchParams } from "react-router-dom";
+import { SocialCardData } from "@/types/social-card";
 
-// Default empty card data
-const defaultCardData = {
+const defaultCardData: SocialCardData = {
   name: "",
-  phone: "",
+  title: "",
+  website: "",
   email: "",
   linkedin: "",
-  github: "",
-  portfolio: "",
+  about: "",
+  interests: "",
   photoUrl: "",
 };
 
 const Create = () => {
   const { user } = useAuth();
-  const [cardData, setCardData] = useState(defaultCardData);
+  const [cardData, setCardData] = useState<SocialCardData>(defaultCardData);
   const [activeTab, setActiveTab] = useState("edit");
-  
-  // Pre-fill with user email if available
+  const [searchParams] = useSearchParams();
+  const templateId = searchParams.get("template") || "classic";
+
   useEffect(() => {
     if (user?.email) {
       setCardData(prev => ({
@@ -36,13 +38,11 @@ const Create = () => {
     }
   }, [user]);
 
-  const handleDataUpdate = (data: typeof cardData) => {
+  const handleDataUpdate = (data: SocialCardData) => {
     setCardData(data);
   };
 
   const handleSaveCard = () => {
-    // In a real app, this would save to a database
-    // For now, we'll just show a toast
     toast({
       title: "Card saved!",
       description: "Your card has been saved successfully.",
@@ -66,7 +66,6 @@ const Create = () => {
             </p>
           </motion.div>
           
-          {/* Mobile Tabs (only show on small screens) */}
           <div className="md:hidden mb-8">
             <Tabs defaultValue="edit" value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="grid grid-cols-2 w-full">
@@ -74,27 +73,34 @@ const Create = () => {
                 <TabsTrigger value="preview">Preview</TabsTrigger>
               </TabsList>
               <TabsContent value="edit" className="mt-6">
-                <SocialCardForm onUpdate={handleDataUpdate} />
+                <SocialCardForm 
+                  onUpdate={handleDataUpdate} 
+                  initialData={cardData}
+                  template={templateId}
+                />
                 <div className="mt-6 flex justify-center">
                   <Button onClick={handleSaveCard}>Save Card</Button>
                 </div>
               </TabsContent>
               <TabsContent value="preview" className="mt-6">
-                <SocialCardPreview data={cardData} />
+                <SocialCardPreview data={cardData} template={templateId} />
               </TabsContent>
             </Tabs>
           </div>
           
-          {/* Desktop view (side by side) */}
           <div className="hidden md:grid md:grid-cols-2 gap-10 max-w-6xl mx-auto">
             <div>
-              <SocialCardForm onUpdate={handleDataUpdate} />
+              <SocialCardForm 
+                onUpdate={handleDataUpdate} 
+                initialData={cardData}
+                template={templateId}
+              />
               <div className="mt-6">
                 <Button onClick={handleSaveCard}>Save Card</Button>
               </div>
             </div>
             <div>
-              <SocialCardPreview data={cardData} />
+              <SocialCardPreview data={cardData} template={templateId} />
             </div>
           </div>
         </div>

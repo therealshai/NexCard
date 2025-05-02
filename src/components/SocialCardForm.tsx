@@ -1,4 +1,3 @@
-
 import { useState, ChangeEvent } from "react";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -10,41 +9,57 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Upload, Github, Linkedin, Globe } from "lucide-react";
+import { Upload, Linkedin, Globe, Mail } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { SocialCardData } from "@/types/social-card";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
-  phone: z.string().optional(),
+  title: z.string().min(2, "Title must be at least 2 characters"),
+  website: z.string().url("Please enter a valid URL").optional().or(z.literal("")),
   email: z.string().email("Please enter a valid email address"),
   linkedin: z.string().url("Please enter a valid URL").optional().or(z.literal("")),
   github: z.string().url("Please enter a valid URL").optional().or(z.literal("")),
   portfolio: z.string().url("Please enter a valid URL").optional().or(z.literal("")),
+  about: z.string().min(10, "About should be at least 10 characters"),
+  interests: z.string().min(10, "Interests should be at least 10 characters"),
+  phone: z.string().optional(),
+  techSkills: z.string().min(5, "Tech skills should be at least 5 characters").optional(),
+  publishedWorks: z.string().min(5, "Published works should be at least 5 characters").optional(),
+  latestWorkLinks: z.string().min(5, "Latest work links should be at least 5 characters").optional(),
+  gradient: z.enum(['blue', 'purple', 'teal', 'orange', 'green']).optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
 type SocialCardFormProps = {
-  onUpdate: (values: FormValues & { photoUrl: string }) => void;
+  onUpdate: (values: SocialCardData) => void;
+  initialData?: Partial<SocialCardData>;
+  template?: string;
 };
 
-export function SocialCardForm({ onUpdate }: SocialCardFormProps) {
-  const [photoUrl, setPhotoUrl] = useState("");
-  const [photoPreview, setPhotoPreview] = useState("");
+export function SocialCardForm({ onUpdate, initialData = {} }: SocialCardFormProps) {
+  const [photoUrl, setPhotoUrl] = useState(initialData.photoUrl || "");
+  const [photoPreview, setPhotoPreview] = useState(initialData.photoUrl || "");
   const { toast } = useToast();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      phone: "",
-      email: "",
-      linkedin: "",
-      github: "",
-      portfolio: "",
+      name: initialData.name || "",
+      title: initialData.title || "",
+      website: initialData.website || "",
+      email: initialData.email || "",
+      linkedin: initialData.linkedin || "",
+      github: initialData.github || "",
+      portfolio: initialData.portfolio || "",
+      about: initialData.about || "",
+      interests: initialData.interests || "",
+      phone: initialData.phone || "",
     },
   });
 
@@ -65,15 +80,18 @@ export function SocialCardForm({ onUpdate }: SocialCardFormProps) {
         const result = reader.result as string;
         setPhotoPreview(result);
         setPhotoUrl(result);
-        
-        // Update the parent component with the form values and photo
-        onUpdate({
-          ...form.getValues(),
-          photoUrl: result,
-        });
+        updateParent({ photoUrl: result });
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const updateParent = (additionalData: Partial<SocialCardData> = {}) => {
+    onUpdate({
+      ...form.getValues(),
+      photoUrl,
+      ...additionalData
+    });
   };
 
   const onSubmit = (values: FormValues) => {
@@ -86,25 +104,15 @@ export function SocialCardForm({ onUpdate }: SocialCardFormProps) {
       return;
     }
 
-    // Update the parent component with the form values and photo
-    onUpdate({
-      ...values,
-      photoUrl,
-    });
-
+    updateParent();
     toast({
       title: "Card updated",
       description: "Your social card has been updated",
     });
   };
 
-  // Update the parent on any field change
   const handleFieldChange = () => {
-    const currentValues = form.getValues();
-    onUpdate({
-      ...currentValues,
-      photoUrl,
-    });
+    updateParent();
   };
 
   return (
@@ -149,7 +157,7 @@ export function SocialCardForm({ onUpdate }: SocialCardFormProps) {
               <FormLabel>Full Name</FormLabel>
               <FormControl>
                 <Input 
-                  placeholder="John Doe" 
+                  placeholder="Laura Smith" 
                   {...field} 
                   onChange={(e) => {
                     field.onChange(e);
@@ -162,16 +170,38 @@ export function SocialCardForm({ onUpdate }: SocialCardFormProps) {
           )}
         />
 
-        {/* Phone */}
+        {/* Title */}
         <FormField
           control={form.control}
-          name="phone"
+          name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Phone Number</FormLabel>
+              <FormLabel>Professional Title</FormLabel>
               <FormControl>
                 <Input 
-                  placeholder="+1 (555) 123-4567" 
+                  placeholder="Frontend Developer" 
+                  {...field} 
+                  onChange={(e) => {
+                    field.onChange(e);
+                    handleFieldChange();
+                  }}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Website */}
+        <FormField
+          control={form.control}
+          name="website"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Personal Website</FormLabel>
+              <FormControl>
+                <Input 
+                  placeholder="laurasmith.website" 
                   {...field} 
                   onChange={(e) => {
                     field.onChange(e);
@@ -193,7 +223,7 @@ export function SocialCardForm({ onUpdate }: SocialCardFormProps) {
               <FormLabel>Email Address</FormLabel>
               <FormControl>
                 <Input 
-                  placeholder="johndoe@example.com" 
+                  placeholder="laura@example.com" 
                   {...field} 
                   onChange={(e) => {
                     field.onChange(e);
@@ -212,12 +242,10 @@ export function SocialCardForm({ onUpdate }: SocialCardFormProps) {
           name="linkedin"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="flex items-center gap-1">
-                <Linkedin size={16} /> LinkedIn URL
-              </FormLabel>
+              <FormLabel>LinkedIn URL</FormLabel>
               <FormControl>
                 <Input 
-                  placeholder="https://linkedin.com/in/username" 
+                  placeholder="https://linkedin.com/in/laurasmith" 
                   {...field} 
                   onChange={(e) => {
                     field.onChange(e);
@@ -236,12 +264,10 @@ export function SocialCardForm({ onUpdate }: SocialCardFormProps) {
           name="github"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="flex items-center gap-1">
-                <Github size={16} /> GitHub URL
-              </FormLabel>
+              <FormLabel>GitHub URL</FormLabel>
               <FormControl>
                 <Input 
-                  placeholder="https://github.com/username" 
+                  placeholder="https://github.com/laurasmith" 
                   {...field} 
                   onChange={(e) => {
                     field.onChange(e);
@@ -260,12 +286,10 @@ export function SocialCardForm({ onUpdate }: SocialCardFormProps) {
           name="portfolio"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="flex items-center gap-1">
-                <Globe size={16} /> Portfolio URL
-              </FormLabel>
+              <FormLabel>Portfolio URL</FormLabel>
               <FormControl>
                 <Input 
-                  placeholder="https://yourportfolio.com" 
+                  placeholder="https://laurasmith-portfolio.com" 
                   {...field} 
                   onChange={(e) => {
                     field.onChange(e);
@@ -278,6 +302,170 @@ export function SocialCardForm({ onUpdate }: SocialCardFormProps) {
           )}
         />
 
+        {/* About */}
+        <FormField
+          control={form.control}
+          name="about"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>About</FormLabel>
+              <FormControl>
+                <Textarea 
+                  placeholder="I am a frontend developer with a particular interest in making things simple and automating daily tasks..."
+                  {...field} 
+                  onChange={(e) => {
+                    field.onChange(e);
+                    handleFieldChange();
+                  }}
+                  rows={4}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Interests */}
+        <FormField
+          control={form.control}
+          name="interests"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Interests</FormLabel>
+              <FormControl>
+                <Textarea 
+                  placeholder="Food expert. Music scholar. Reader. Internet fanatic. Bacon buff. Entrepreneur. Travel geek. Pop culture ninja. Coffee fanatic."
+                  {...field} 
+                  onChange={(e) => {
+                    field.onChange(e);
+                    handleFieldChange();
+                  }}
+                  rows={3}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Phone (Optional) */}
+        <FormField
+          control={form.control}
+          name="phone"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Phone Number (Optional)</FormLabel>
+              <FormControl>
+                <Input 
+                  placeholder="+1 (555) 123-4567" 
+                  {...field} 
+                  onChange={(e) => {
+                    field.onChange(e);
+                    handleFieldChange();
+                  }}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        {/* Tech Skills */}
+<FormField
+  control={form.control}
+  name="techSkills"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>Technical Skills</FormLabel>
+      <FormControl>
+        <Textarea 
+          placeholder="React, Python, Machine Learning, Data Analysis..."
+          {...field} 
+          onChange={(e) => {
+            field.onChange(e);
+            handleFieldChange();
+          }}
+          rows={2}
+        />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+
+{/* Published Works */}
+<FormField
+  control={form.control}
+  name="publishedWorks"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>Published Works</FormLabel>
+      <FormControl>
+        <Textarea 
+          placeholder="1. 'Deep Learning Approaches to NLP' - Journal of AI Research, 2023..."
+          {...field} 
+          onChange={(e) => {
+            field.onChange(e);
+            handleFieldChange();
+          }}
+          rows={3}
+        />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+
+{/* Latest Work Links */}
+<FormField
+  control={form.control}
+  name="latestWorkLinks"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>Latest Work Links</FormLabel>
+      <FormControl>
+        <Textarea 
+          placeholder="https://arxiv.org/your-paper\nhttps://github.com/your-project..."
+          {...field} 
+          onChange={(e) => {
+            field.onChange(e);
+            handleFieldChange();
+          }}
+          rows={2}
+        />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+
+{/* Gradient Selector */}
+<FormField
+  control={form.control}
+  name="gradient"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>Card Gradient</FormLabel>
+      <FormControl>
+        <div className="flex gap-2">
+          {['blue', 'purple', 'teal', 'orange', 'green'].map((color) => (
+            <button
+              type="button"
+              key={color}
+              className={`w-8 h-8 rounded-full bg-gradient-to-br from-${color}-400 to-${color}-600 border-2 ${field.value === color ? 'border-black' : 'border-transparent'}`}
+              onClick={() => {
+                field.onChange(color);
+                handleFieldChange();
+              }}
+              title={color.charAt(0).toUpperCase() + color.slice(1)}
+            />
+          ))}
+        </div>
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+          {/* Tech Skills (Optional) */}  
         <Button type="submit" className="w-full">Save Card</Button>
       </form>
     </Form>
