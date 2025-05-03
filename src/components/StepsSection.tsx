@@ -1,54 +1,54 @@
 
 import { motion } from "framer-motion";
-import { Upload, Edit, Share2 } from "lucide-react";
+import { CheckCircle, Upload, Edit, Share2, Globe, TrendingUp, Video } from "lucide-react";
+import { BentoGrid, BentoItem } from "@/components/ui/bento-grid";
 
-const steps = [
+const stepsItems: BentoItem[] = [
   {
-    icon: <Upload className="w-8 h-8 text-primary" />,
     title: "Upload Your Photo",
-    description: "Choose your professional profile picture and upload it to your social card."
+    description: "Choose your professional profile picture and upload it to your social card.",
+    icon: <Upload className="w-4 h-4 text-primary" />,
+    status: "Step 1",
+    tags: ["Image", "Profile"],
   },
   {
-    icon: <Edit className="w-8 h-8 text-primary" />,
     title: "Add Your Details",
-    description: "Fill in your contact information and links to your professional profiles."
+    description: "Fill in your contact information and links to your professional profiles.",
+    icon: <Edit className="w-4 h-4 text-primary" />,
+    status: "Step 2",
+    tags: ["Details", "Contact"],
+    colSpan: 2,
+    hasPersistentHover: true,
   },
   {
-    icon: <Share2 className="w-8 h-8 text-primary" />,
-    title: "Share or Download",
-    description: "Generate a shareable link or download your social card as PNG or JPG."
+    title: "Share Your Card",
+    description: "Generate a shareable link or download your social card as PNG or JPG.",
+    icon: <Share2 className="w-4 h-4 text-primary" />,
+    status: "Step 3",
+    tags: ["Share", "Download"],
+    colSpan: 2,
+  },
+  {
+    title: "Track Engagement",
+    description: "Monitor who views and interacts with your professional card.",
+    icon: <TrendingUp className="w-4 h-4 text-primary" />,
+    status: "Step 4",
+    tags: ["Analytics", "Stats"],
   }
 ];
 
 export function StepsSection() {
   return (
-    <section className="py-20 px-4">
+    <section className="py-12 sm:py-16 md:py-20 px-4 bg-background">
       <div className="container mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold">How It Works</h2>
+        <div className="text-center mb-10 md:mb-16">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold">How It Works</h2>
           <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
-            Create your professional social card in three simple steps
+            Create your professional social card in four simple steps
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          {steps.map((step, index) => (
-            <motion.div
-              key={index}
-              className="flex flex-col items-center text-center p-6 rounded-xl glass-card"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              viewport={{ once: true }}
-            >
-              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                {step.icon}
-              </div>
-              <h3 className="text-xl font-bold mb-3">{step.title}</h3>
-              <p className="text-muted-foreground">{step.description}</p>
-            </motion.div>
-          ))}
-        </div>
+        <BentoGrid items={stepsItems} />
       </div>
     </section>
   );
