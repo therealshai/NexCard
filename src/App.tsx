@@ -1,13 +1,12 @@
 
 import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { useEffect } from "react";
-import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/clerk-react";
 import { AuthProvider } from "@/context/AuthContext";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Templates from "./pages/Templates";
 import Create from "./pages/Create";
@@ -19,6 +18,7 @@ import Contact from "./pages/Contact";
 import Privacy from "./pages/Privacy";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import SavedCards from "./pages/SavedCards";
 
 // Add popup provider
 import { PopupProvider } from "./components/InspirationPopup";
@@ -36,7 +36,7 @@ const ScrollToTop = () => {
   return null;
 };
 
-// App Router Component with Clerk Auth
+// App Router Component
 const AppRoutes = () => {
   return (
     <>
@@ -46,30 +46,26 @@ const AppRoutes = () => {
         <Route path="/templates" element={<Templates />} />
         <Route path="/login" element={<Login />} />
         <Route path="/create" element={
-          <>
-            <SignedIn>
-              <Create />
-            </SignedIn>
-            <SignedOut>
-              <RedirectToSignIn />
-            </SignedOut>
-          </>
+          <ProtectedRoute>
+            <Create />
+          </ProtectedRoute>
         } />
         <Route path="/dashboard" element={
-          <>
-            <SignedIn>
-              <Dashboard />
-            </SignedIn>
-            <SignedOut>
-              <RedirectToSignIn />
-            </SignedOut>
-          </>
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/saved-cards" element={
+          <ProtectedRoute>
+            <SavedCards />
+          </ProtectedRoute>
         } />
         <Route path="/product" element={<Product />} />
         <Route path="/features" element={<Features />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/privacy" element={<Privacy />} />
+        <Route path="/share/:id" element={<Templates />} /> {/* Route for sharing */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>
@@ -83,8 +79,8 @@ const App = () => (
         <BrowserRouter>
           <PopupProvider>
             <TooltipProvider>
+              {/* Only include one Toaster component */}
               <Toaster />
-              <Sonner />
               <AppRoutes />
             </TooltipProvider>
           </PopupProvider>

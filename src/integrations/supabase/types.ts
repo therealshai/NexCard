@@ -9,7 +9,96 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      cards: {
+        Row: {
+          about: string | null
+          created_at: string
+          email: string | null
+          github_url: string | null
+          gradient: string | null
+          id: string
+          interests: string | null
+          linkedin_url: string | null
+          name: string
+          phone: string | null
+          photo_url: string | null
+          template_id: string
+          title: string | null
+          updated_at: string
+          user_id: string
+          website: string | null
+        }
+        Insert: {
+          about?: string | null
+          created_at?: string
+          email?: string | null
+          github_url?: string | null
+          gradient?: string | null
+          id?: string
+          interests?: string | null
+          linkedin_url?: string | null
+          name: string
+          phone?: string | null
+          photo_url?: string | null
+          template_id: string
+          title?: string | null
+          updated_at?: string
+          user_id: string
+          website?: string | null
+        }
+        Update: {
+          about?: string | null
+          created_at?: string
+          email?: string | null
+          github_url?: string | null
+          gradient?: string | null
+          id?: string
+          interests?: string | null
+          linkedin_url?: string | null
+          name?: string
+          phone?: string | null
+          photo_url?: string | null
+          template_id?: string
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      users: {
+        Row: {
+          created_at: string
+          email: string
+          first_name: string | null
+          id: string
+          image_url: string | null
+          last_name: string | null
+          last_sign_in: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          first_name?: string | null
+          id: string
+          image_url?: string | null
+          last_name?: string | null
+          last_sign_in?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          first_name?: string | null
+          id?: string
+          image_url?: string | null
+          last_name?: string | null
+          last_sign_in?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

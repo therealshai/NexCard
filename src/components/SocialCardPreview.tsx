@@ -1,29 +1,32 @@
 
-import { Github, Linkedin, Globe, Phone, Mail, Download, Link2 } from "lucide-react";
+import { Github, Linkedin, Globe, Phone, Mail, Download, Link2, Twitter, Facebook, Instagram } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import html2canvas from "html2canvas";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { SocialCardData } from "@/types/social-card";
 
 type SocialCardPreviewProps = {
-  data: {
-    name: string;
-    phone?: string;
-    email: string;
-    linkedin?: string;
-    github?: string;
-    portfolio?: string;
-    photoUrl: string;
-  };
+  data: SocialCardData;
+  template?: string;
 };
 
-export function SocialCardPreview({ data }: SocialCardPreviewProps) {
+export function SocialCardPreview({ data, template = 'classic' }: SocialCardPreviewProps) {
   const { toast } = useToast();
   const cardRef = useRef<HTMLDivElement>(null);
+  const [selectedGradient, setSelectedGradient] = useState<string>(data.gradient || 'dark');
+
+  const gradients = {
+    dark: 'bg-gradient-to-b from-gray-900 to-gray-800 text-white',
+    light: 'bg-gradient-to-b from-gray-100 to-white text-gray-800',
+    blue: 'bg-gradient-to-b from-blue-500 to-blue-700 text-white',
+    purple: 'bg-gradient-to-b from-purple-500 to-purple-700 text-white',
+    teal: 'bg-gradient-to-b from-teal-500 to-teal-700 text-white',
+    orange: 'bg-gradient-to-b from-orange-400 to-orange-600 text-white',
+    green: 'bg-gradient-to-b from-green-500 to-green-700 text-white',
+  };
 
   const generateLink = () => {
-    // In a real application, this would create a unique link on the server
-    // For this demo, we'll create a mock link and copy it to clipboard
     const mockLink = `https://socialcard.app/s/${Math.random().toString(36).substring(2, 10)}`;
     
     navigator.clipboard.writeText(mockLink);
@@ -63,86 +66,181 @@ export function SocialCardPreview({ data }: SocialCardPreviewProps) {
     }
   };
 
+  const renderClassicTemplate = () => (
+    <div className={`w-full max-w-md overflow-hidden rounded-lg shadow-xl ${gradients[selectedGradient as keyof typeof gradients]}`}>
+      {/* Profile photo */}
+      {data.photoUrl && (
+        <div className="w-full aspect-square overflow-hidden">
+          <img 
+            src={data.photoUrl} 
+            alt={data.name} 
+            className="w-full h-full object-cover"
+          />
+        </div>
+      )}
+      
+      <div className="p-6">
+        <h1 className="text-3xl font-bold mb-1 text-center">{data.name || "Your Name"}</h1>
+        <p className="text-xl mb-3 text-center text-orange-400">{data.title || "Professional Title"}</p>
+        
+        {data.website && <p className="text-sm opacity-80 mb-5 text-center">{data.website}</p>}
+        
+        <div className="flex justify-center space-x-4 my-5">
+          {data.email && (
+            <a href={`mailto:${data.email}`} className="inline-block px-6 py-2 bg-white text-gray-800 rounded-full hover:bg-gray-100 transition font-medium flex items-center">
+              <Mail className="w-5 h-5 mr-2" /> Email
+            </a>
+          )}
+          {data.linkedin && (
+            <a href={data.linkedin} target="_blank" rel="noopener noreferrer" className="inline-block px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition font-medium flex items-center">
+              <Linkedin className="w-5 h-5 mr-2" /> LinkedIn
+            </a>
+          )}
+        </div>
+        
+        <hr className="my-6 opacity-20" />
+        
+        {data.about && (
+          <div className="mb-5">
+            <h3 className="text-xl font-semibold mb-2">About</h3>
+            <p className="opacity-90">{data.about}</p>
+          </div>
+        )}
+        
+        {data.interests && (
+          <div className="mb-5">
+            <h3 className="text-xl font-semibold mb-2">Interests</h3>
+            <p className="opacity-90">{data.interests}</p>
+          </div>
+        )}
+        
+        <div className="flex justify-center space-x-4 mt-8">
+          <a href="#" className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-700 hover:bg-gray-600 transition">
+            <Twitter className="w-5 h-5" />
+          </a>
+          <a href="#" className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-700 hover:bg-gray-600 transition">
+            <Facebook className="w-5 h-5" />
+          </a>
+          <a href="#" className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-700 hover:bg-gray-600 transition">
+            <Instagram className="w-5 h-5" />
+          </a>
+          {data.github && (
+            <a href={data.github} className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-700 hover:bg-gray-600 transition">
+              <Github className="w-5 h-5" />
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderModernTemplate = () => (
+    <div className={`w-full max-w-md rounded-lg shadow-xl overflow-hidden`}>
+      {/* Top section with photo */}
+      {data.photoUrl && (
+        <div className="w-full aspect-square overflow-hidden">
+          <img 
+            src={data.photoUrl} 
+            alt={data.name} 
+            className="w-full h-full object-cover"
+          />
+        </div>
+      )}
+      
+      {/* Info section */}
+      <div className={`p-6 ${selectedGradient === 'dark' ? 'bg-gray-900 text-white' : 'bg-white text-gray-800'}`}>
+        <h1 className="text-3xl font-bold mb-1 text-center">{data.name || "Your Name"}</h1>
+        <p className={`text-xl mb-3 text-center ${selectedGradient === 'dark' ? 'text-orange-400' : 'text-orange-500'}`}>
+          {data.title || "Professional Title"}
+        </p>
+        
+        {data.website && <p className="text-sm opacity-80 mb-5 text-center">{data.website}</p>}
+        
+        <div className="flex justify-center space-x-4 my-5">
+          {data.email && (
+            <a href={`mailto:${data.email}`} className={`inline-block px-6 py-2 rounded-full transition font-medium flex items-center ${
+              selectedGradient === 'dark' 
+                ? 'bg-white text-gray-800 hover:bg-gray-200' 
+                : 'bg-gray-800 text-white hover:bg-gray-700'
+            }`}>
+              <Mail className="w-5 h-5 mr-2" /> Email
+            </a>
+          )}
+          {data.linkedin && (
+            <a href={data.linkedin} target="_blank" rel="noopener noreferrer" className="inline-block px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition font-medium flex items-center">
+              <Linkedin className="w-5 h-5 mr-2" /> LinkedIn
+            </a>
+          )}
+        </div>
+      </div>
+
+      {/* About and Interests sections */}
+      <div className={`p-6 ${
+        selectedGradient === 'dark' 
+          ? 'bg-gray-800 text-white' 
+          : 'bg-gray-100 text-gray-800'
+      }`}>
+        {data.about && (
+          <div className="mb-5">
+            <h3 className="text-xl font-semibold mb-2">About</h3>
+            <p className="opacity-90">{data.about}</p>
+          </div>
+        )}
+        
+        {data.interests && (
+          <div className="mb-5">
+            <h3 className="text-xl font-semibold mb-2">Interests</h3>
+            <p className="opacity-90">{data.interests}</p>
+          </div>
+        )}
+      </div>
+      
+      {/* Social icons */}
+      <div className={`flex justify-center space-x-4 py-4 ${
+        selectedGradient === 'dark' 
+          ? 'bg-gray-700 text-gray-200' 
+          : 'bg-gray-200 text-gray-700'
+      }`}>
+        <a href="#" className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-600 text-white hover:bg-gray-500 transition">
+          <Twitter className="w-5 h-5" />
+        </a>
+        <a href="#" className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-600 text-white hover:bg-gray-500 transition">
+          <Facebook className="w-5 h-5" />
+        </a>
+        <a href="#" className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-600 text-white hover:bg-gray-500 transition">
+          <Instagram className="w-5 h-5" />
+        </a>
+        {data.github && (
+          <a href={data.github} className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-600 text-white hover:bg-gray-500 transition">
+            <Github className="w-5 h-5" />
+          </a>
+        )}
+      </div>
+    </div>
+  );
+
   return (
     <div className="space-y-8">
-      <div ref={cardRef} className="social-card">
-        <div className="social-card-glow"></div>
-        <div className="p-6 sm:p-8">
-          <div className="flex flex-col sm:flex-row gap-6 items-center text-center sm:text-left">
-            {/* Profile Photo */}
-            <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white dark:border-gray-800 shadow-lg">
-              {data.photoUrl ? (
-                <img 
-                  src={data.photoUrl} 
-                  alt={data.name || "Profile"} 
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-400">
-                  <span className="text-5xl font-bold">{data.name?.charAt(0) || "?"}</span>
-                </div>
-              )}
-            </div>
-            
-            {/* User Information */}
-            <div className="flex-1">
-              <h2 className="text-2xl font-bold mb-2">{data.name || "Your Name"}</h2>
-              
-              {/* Contact Details */}
-              <div className="space-y-2 mb-4">
-                {data.email && (
-                  <div className="flex items-center justify-center sm:justify-start gap-2 text-sm">
-                    <Mail size={16} className="text-muted-foreground" />
-                    <span>{data.email}</span>
-                  </div>
-                )}
-                
-                {data.phone && (
-                  <div className="flex items-center justify-center sm:justify-start gap-2 text-sm">
-                    <Phone size={16} className="text-muted-foreground" />
-                    <span>{data.phone}</span>
-                  </div>
-                )}
-              </div>
-              
-              {/* Social Links */}
-              <div className="flex items-center justify-center sm:justify-start gap-3">
-                {data.linkedin && (
-                  <a 
-                    href={data.linkedin} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="w-8 h-8 rounded-full bg-[#0A66C2] flex items-center justify-center text-white hover:opacity-90 transition-opacity"
-                  >
-                    <Linkedin size={18} />
-                  </a>
-                )}
-                
-                {data.github && (
-                  <a 
-                    href={data.github} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="w-8 h-8 rounded-full bg-gray-900 dark:bg-gray-700 flex items-center justify-center text-white hover:opacity-90 transition-opacity"
-                  >
-                    <Github size={18} />
-                  </a>
-                )}
-                
-                {data.portfolio && (
-                  <a 
-                    href={data.portfolio} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="w-8 h-8 rounded-full bg-aragon flex items-center justify-center text-white hover:opacity-90 transition-opacity"
-                  >
-                    <Globe size={18} />
-                  </a>
-                )}
-              </div>
-            </div>
-          </div>
+      {/* Gradient Selection */}
+      <div className="space-y-2">
+        <h3 className="text-lg font-semibold">Card Background</h3>
+        <div className="flex flex-wrap gap-2">
+          {Object.keys(gradients).map((grad) => (
+            <button
+              key={grad}
+              onClick={() => setSelectedGradient(grad)}
+              className={`w-10 h-10 rounded-full border-2 ${
+                selectedGradient === grad ? 'border-primary' : 'border-gray-300'
+              } ${gradients[grad as keyof typeof gradients].replace('text-white', '').replace('text-gray-800', '')}`}
+              title={grad.charAt(0).toUpperCase() + grad.slice(1)}
+            />
+          ))}
         </div>
+      </div>
+
+      {/* Card Preview */}
+      <div ref={cardRef} className="social-card max-w-md mx-auto">
+        {template === 'modern' ? renderModernTemplate() : renderClassicTemplate()}
       </div>
       
       {/* Actions */}

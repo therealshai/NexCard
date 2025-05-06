@@ -4,10 +4,9 @@ import { ClerkProvider } from '@clerk/clerk-react';
 import App from './App.tsx';
 import './index.css';
 
-// Import your Publishable Key
-// Use a hardcoded default value for development if the env variable is not set
+// Use the new Clerk API key
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || 
-  'pk_test_bm9ibGUtY2F0ZmlzaC04Ny5jbGVyay5hY2NvdW50cy5kZXYk';
+  'pk_test_cHJlbWl1bS1hbW9lYmEtMTMuY2xlcmsuYWNjb3VudHMuZGV2JA';
 
 if (!PUBLISHABLE_KEY) {
   throw new Error("Missing Publishable Key");

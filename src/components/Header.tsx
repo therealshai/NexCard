@@ -1,7 +1,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, ChevronDown, LogIn, User } from "lucide-react";
+import { Menu, X, ChevronDown, LogIn, User, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
@@ -36,13 +36,9 @@ export function Header() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border transition-all duration-300">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        {/* Logo */}
+        {/* Brand Name instead of Logo */}
         <Link to="/" className="flex items-center gap-2">
-          <img 
-            src="/public/lovable-uploads/0fac59bc-cc22-4e8d-aadb-89ee6dcf8c8a.png" 
-            alt="NexCard" 
-            className="h-10 w-auto"
-          />
+          <span className="text-xl font-bold"><span className="text-green-500">Nex</span>Card</span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -85,6 +81,14 @@ export function Header() {
           <Link to="/templates" className={cn("nav-link", isActive("/templates") && "active")}>
             Templates
           </Link>
+          
+          {isAuthenticated && (
+            <>
+              <Link to="/saved-cards" className={cn("nav-link flex items-center gap-1", isActive("/saved-cards") && "active")}>
+                <CreditCard className="w-4 h-4" /> My Cards
+              </Link>
+            </>
+          )}
         </nav>
 
         {/* Actions */}
@@ -167,6 +171,16 @@ export function Header() {
           >
             Templates
           </Link>
+          
+          {isAuthenticated && (
+            <Link 
+              to="/saved-cards" 
+              className={cn("py-2 flex items-center gap-2", isActive("/saved-cards") && "text-primary font-medium")}
+              onClick={() => setIsOpen(false)}
+            >
+              <CreditCard className="w-4 h-4" /> My Cards
+            </Link>
+          )}
           
           {!isAuthenticated && (
             <Button asChild variant="destructive" className="w-full mt-2">

@@ -4,20 +4,9 @@ import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
 import { Footer as CustomFooter } from "@/components/ui/footer";
 
 export function Footer() {
-  // Logo component to reuse in the footer
-  const Logo = () => {
-    return (
-      <img 
-        src="/public/lovable-uploads/0fac59bc-cc22-4e8d-aadb-89ee6dcf8c8a.png" 
-        alt="NexCard Logo" 
-        className="h-12 w-auto"
-      />
-    );
-  };
-
   return (
     <CustomFooter
-      logo={<Logo />}
+      logo={<span className="text-xl font-bold"><span className="text-green-500">Nex</span>Card</span>}
       brandName="NexCard"
       socialLinks={[
         {
