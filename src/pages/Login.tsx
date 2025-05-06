@@ -67,7 +67,7 @@ const Login = () => {
           {/* Right Side - Sign In Component */}
           <Card className="shadow-xl border-border/50">
             <CardContent className="pt-6">
-              <SignIn/>
+              <SignIn afterSignInUrl="/dashboard" />
             </CardContent>
           </Card>
         </motion.div>
