@@ -1,6 +1,7 @@
 # NexCard - Your Digital Business Identity Platform
 
-![NexCard Logo](public/Social-Card.png)
+![Social-Card](https://github.com/user-attachments/assets/ff2cc570-96d2-49b6-8c0c-bec2efc5bd19)
+
 
 ## 🌟 Overview
 
