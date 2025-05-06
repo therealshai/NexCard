@@ -87,12 +87,12 @@ export function SocialCardPreview({ data, template = 'classic' }: SocialCardPrev
         
         <div className="flex justify-center space-x-4 my-5">
           {data.email && (
-            <a href={`mailto:${data.email}`} className="inline-block px-6 py-2 bg-white text-gray-800 rounded-full hover:bg-gray-100 transition font-medium flex items-center">
+            <a href={`mailto:${data.email}`} className="px-6 py-2 bg-white text-gray-800 rounded-full hover:bg-gray-100 transition font-medium flex items-center">
               <Mail className="w-5 h-5 mr-2" /> Email
             </a>
           )}
           {data.linkedin && (
-            <a href={data.linkedin} target="_blank" rel="noopener noreferrer" className="inline-block px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition font-medium flex items-center">
+            <a href={data.linkedin} target="_blank" rel="noopener noreferrer" className="inline-block px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition font-medium items-center">
               <Linkedin className="w-5 h-5 mr-2" /> LinkedIn
             </a>
           )}
@@ -158,7 +158,7 @@ export function SocialCardPreview({ data, template = 'classic' }: SocialCardPrev
         
         <div className="flex justify-center space-x-4 my-5">
           {data.email && (
-            <a href={`mailto:${data.email}`} className={`inline-block px-6 py-2 rounded-full transition font-medium flex items-center ${
+            <a href={`mailto:${data.email}`} className={`px-6 py-2 rounded-full transition font-medium flex items-center ${
               selectedGradient === 'dark' 
                 ? 'bg-white text-gray-800 hover:bg-gray-200' 
                 : 'bg-gray-800 text-white hover:bg-gray-700'
@@ -167,7 +167,7 @@ export function SocialCardPreview({ data, template = 'classic' }: SocialCardPrev
             </a>
           )}
           {data.linkedin && (
-            <a href={data.linkedin} target="_blank" rel="noopener noreferrer" className="inline-block px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition font-medium flex items-center">
+            <a href={data.linkedin} target="_blank" rel="noopener noreferrer" className="inline-block px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition font-medium items-center">
               <Linkedin className="w-5 h-5 mr-2" /> LinkedIn
             </a>
           )}
@@ -194,7 +194,33 @@ export function SocialCardPreview({ data, template = 'classic' }: SocialCardPrev
           </div>
         )}
       </div>
-      
+      {/* Additional Information */}
+      <div className={`p-6 ${
+        selectedGradient === 'dark' 
+          ? 'bg-gray-800 text-white' 
+          : 'bg-gray-100 text-gray-800'
+      }`}>
+        {data.techSkills && (
+          <div className="mb-5">
+            <h3 className="text-xl font-semibold mb-2">Technical Skills</h3>
+            <p className="opacity-90">{data.techSkills}</p>
+          </div>
+        )}
+        
+        {data.publishedWorks && (
+          <div className="mb-5">
+            <h3 className="text-xl font-semibold mb-2">Published Works</h3>
+            <p className="opacity-90">{data.publishedWorks}</p>
+          </div>
+        )}
+        
+        {data.latestWorkLinks && (
+          <div className="mb-5">
+            <h3 className="text-xl font-semibold mb-2">Latest Work Links</h3>
+            <p className="opacity-90 whitespace-pre-line">{data.latestWorkLinks}</p>
+          </div>
+        )}
+      </div>
       {/* Social icons */}
       <div className={`flex justify-center space-x-4 py-4 ${
         selectedGradient === 'dark' 
